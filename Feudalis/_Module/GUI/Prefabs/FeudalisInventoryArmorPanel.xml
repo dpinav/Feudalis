@@ -1,0 +1,23 @@
+<Prefab>
+  <VisualDefinitions>
+    <VisualDefinition Name="LeftMenu" EaseIn="true" TransitionDuration="0.45">
+      <VisualState PositionXOffset="0" State="Default" />
+    </VisualDefinition>
+  </VisualDefinitions>
+  <!-- Left Menu - Armors -->
+  <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="200" SuggestedHeight="!Inventory.Height" HorizontalAlignment="Left" VerticalAlignment="Center" Sprite="BlankWhiteSquare_9" Color="#000000FF" AlphaFactor="0.8" VisualDefinition="LeftMenu" PositionXOffset="-50">
+    <Children>
+      <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Center" StackLayout.LayoutMethod="VerticalBottomToTop">
+        <Children>
+          <FeudalisInventoryItemSlot Parameter.BackgroundBrush="InventoryHelmetSlot" DataSource="{CharacterHelmSlot}" Parameter.IsRightSide="false" />
+          <FeudalisInventoryItemSlot MarginTop="20" Parameter.BackgroundBrush="InventoryCloakSlot" DataSource="{CharacterCloakSlot}" Parameter.IsRightSide="false" />
+          <FeudalisInventoryItemSlot MarginTop="20" Parameter.BackgroundBrush="InventoryArmorSlot" DataSource="{CharacterTorsoSlot}" Parameter.IsRightSide="false" />
+          <FeudalisInventoryItemSlot MarginTop="20" Parameter.BackgroundBrush="InventoryGloveSlot" DataSource="{CharacterGloveSlot}" Parameter.IsRightSide="false" />
+          <FeudalisInventoryItemSlot MarginTop="20" Parameter.BackgroundBrush="InventoryBootSlot" DataSource="{CharacterBootSlot}" Parameter.IsRightSide="false" />
+        </Children>
+      </ListPanel>
+      <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" ExtendLeft="18" ExtendTop="18" ExtendRight="18" ExtendBottom="18" IsEnabled="false" />
+    </Children>
+  </Widget>
+
+</Prefab>

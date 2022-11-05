@@ -1,0 +1,31 @@
+<Prefab>
+    <Parameters>
+        <Parameter Name="HintDataSource" DefaultValue="" />
+        <Parameter Name="IsRightSide" DefaultValue="false" />
+        <Parameter Name="IsCentralPanel" DefaultValue="false" />
+        <Parameter Name="BackgroundBrush" DefaultValue="" />
+    </Parameters>
+    <Constants>
+        <Constant Name="HintDataSource" Value="*HintDataSource" Prefix="..\" />
+        <Constant Name="HintDataSourceBackground" Value="*HintDataSource" />
+    </Constants>
+    <Window>
+        <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="180" SuggestedHeight="95" HorizontalAlignment="Center">
+            <Children>
+                <BrushWidget Id="Background" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="*BackgroundBrush" AcceptDrop="true" Command.Drop="ExecuteTransferToSlot"></BrushWidget>
+                <InventoryEquippedItemSlotWidget IsRightSide="*IsRightSide" ItemType="@TypeId" AcceptDrag="true" DoNotPassEventsToChildren="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Background="..\Background" ImageIdentifier="ImageIdentifier">
+                    <Children>
+                        <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="3" MarginRight="4" MarginTop="3" MarginBottom="4" Sprite="Inventory\portrait_cart" />
+                        <ImageIdentifierWidget Id="ImageIdentifier" DataSource="{ImageIdentifier}" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="3" MarginRight="4" MarginTop="3" MarginBottom="4" ImageId="@Id" ImageTypeCode="@ImageTypeCode" AdditionalArgs="@AdditionalArgs" LoadingIconWidget="LoadingIconWidget">
+                            <Children>
+                                <Standard.CircleLoadingWidget HorizontalAlignment="Center" VerticalAlignment="Center" Id="LoadingIconWidget" />
+                            </Children>
+                        </ImageIdentifierWidget>
+                        <!--<HintWidget IsDisabled="true" DataSource="!HintDataSource" Command.HoverBegin="ExecuteBeginHint" Command.HoverEnd="ExecuteEndHint" WidthSizePolicy = "StretchToParent" HeightSizePolicy = "StretchToParent"/>-->
+                    </Children>
+                </InventoryEquippedItemSlotWidget>
+                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="slick_frame_9" ExtendLeft="4" ExtendTop="4" ExtendRight="4" ExtendBottom="4" IsEnabled="false" IsVisible="*IsCentralPanel" />
+            </Children>
+        </Widget>
+    </Window>
+</Prefab>

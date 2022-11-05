@@ -10,6 +10,7 @@ namespace Feudalis
     {
         private const int InitialGold = 1500;
         private const int InitialBounty = 3;
+
         public override bool IsGameModeHidingAllAgentVisuals => true;
         public override bool IsGameModeUsingOpposingTeams => true;
 

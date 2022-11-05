@@ -1,4 +1,4 @@
-﻿using Feudalis.ClientOnly.UI;
+﻿using Feudalis.ClientOnly.Inventory;
 using System;
 using System.Collections.Generic;
 using System.Text;

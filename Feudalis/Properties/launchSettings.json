@@ -3,8 +3,14 @@
     "Bannerlord": {
       "commandName": "Executable",
       "executablePath": "$(GameFolder)\\bin\\Win64_Shipping_Client\\Bannerlord.exe",
-      "commandLineArgs": "/singleplayer _MODULES_*Native*SandBoxCore*CustomBattle*Sandbox*StoryMode*$(ModuleName)*_MODULES_",
+      "commandLineArgs": "/multiplayer _MODULES_*Native*$(ModuleName)*_MODULES_",
       "workingDirectory": "$(GameFolder)\\bin\\Win64_Shipping_Client"
+    },
+    "Server": {
+      "commandName": "Executable",
+      "executablePath": "B:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Dedicated Server\\bin\\Win64_Shipping_Server\\DedicatedCustomServer.Starter.exe",
+      "commandLineArgs": "/dedicatedcustomserverconfigfile tdm_config.txt _MODULES_*Native*Multiplayer*Feudalis*_MODULES_",
+      "workingDirectory": "B:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Dedicated Server\\bin\\Win64_Shipping_Server"
     }
   }
 }

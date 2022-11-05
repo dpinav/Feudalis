@@ -4,35 +4,16 @@
   <Id value="$modulename$" />
   <Name value="$modulename$" />
   <Version value="v$version$" />
-  <Official value="false" />
-  <DefaultModule value="false" />
-  <!-- e1.7.1 -->
-  <SingleplayerModule value="true" />
-  <MultiplayerModule value="false" />
   <!-- e1.8.0 -->
-  <ModuleCategory value="Singleplayer"/>
+  <ModuleCategory value="Multiplayer"/>
   <DependedModules>
-    <DependedModule Id="Native" />
-    <DependedModule Id="SandBoxCore" />
-    <DependedModule Id="Sandbox" />
-    <DependedModule Id="StoryMode" />
-    <DependedModule Id="CustomBattle" />
+    <DependedModule Id="Native"  DependentVersion="e1.0.0" Optional="false"/>
   </DependedModules>
-  <!-- Community Dependency Metadata -->
-  <!-- https://github.com/BUTR/Bannerlord.BUTRLoader#for-modders -->
-  <DependedModuleMetadatas>
-    <DependedModuleMetadata id="Native" order="LoadBeforeThis" />
-    <DependedModuleMetadata id="SandBoxCore" order="LoadBeforeThis" />
-    <DependedModuleMetadata id="Sandbox" order="LoadBeforeThis" />
-    <DependedModuleMetadata id="StoryMode" order="LoadBeforeThis" />
-    <DependedModuleMetadata id="CustomBattle" order="LoadBeforeThis" />
-  </DependedModuleMetadatas>
-  <!-- Community Dependency Metadata -->
   <SubModules>
     <SubModule>
       <Name value="$modulename$" />
       <DLLName value="$modulename$.dll" />
-      <SubModuleClassType value="$modulename$.SubModule" />
+      <SubModuleClassType value="$modulename$.FeudalisSubModule" />
       <Tags />
     </SubModule>
   </SubModules>
