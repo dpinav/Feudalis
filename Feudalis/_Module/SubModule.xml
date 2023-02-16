@@ -4,10 +4,9 @@
   <Id value="$modulename$" />
   <Name value="$modulename$" />
   <Version value="v$version$" />
-  <!-- e1.8.0 -->
   <ModuleCategory value="Multiplayer"/>
   <DependedModules>
-    <DependedModule Id="Native"  DependentVersion="e1.0.0" Optional="false"/>
+    <DependedModule Id="Native" DependentVersion="v1.0.0" Optional="false" />
   </DependedModules>
   <SubModules>
     <SubModule>
@@ -17,4 +16,9 @@
       <Tags />
     </SubModule>
   </SubModules>
+	<Xmls>
+		<XmlNode>
+			<XmlName id="GameText" path="multiplayer_strings"/>
+		</XmlNode>
+	</Xmls>
 </Module>

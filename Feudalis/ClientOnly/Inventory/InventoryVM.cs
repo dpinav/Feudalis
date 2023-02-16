@@ -11,12 +11,9 @@ namespace Feudalis.ClientOnly.Inventory
         private MissionMultiplayerFeudalisClient _client;
         private readonly MissionMultiplayerGameModeBaseClient _gameMode;
         private bool _isMyRepresentativeAssigned;
-        private MissionScoreboardComponent _scoreboardComponent;
         private bool _isEnabled;
-        private string _remainingRoundTime;
-        private MBBindingList<FeudalisPlayerVM> _players;
 
-        private MBList<InventorySlotVM> _inventorySlots;
+        private MBBindingList<InventorySlotVM> _inventorySlots;
         private InventoryArmorPanelVM _armorVM;
         private InventoryWeaponPanelVM _weaponVM;
 
@@ -29,13 +26,21 @@ namespace Feudalis.ClientOnly.Inventory
             _client.OnMyRepresentativeAssigned += OnMyRepresentativeAssigned;
             _gameMode = Mission.Current.GetMissionBehavior<MissionMultiplayerGameModeBaseClient>();
 
-            _scoreboardComponent = Mission.Current.GetMissionBehavior<MissionScoreboardComponent>();
-
-            _inventorySlots = new MBList<InventorySlotVM>();
+            _armorVM = new InventoryArmorPanelVM(_client.MyRepresentative);
+            _weaponVM = new InventoryWeaponPanelVM(_client.MyRepresentative);
+            _inventorySlots = new MBBindingList<InventorySlotVM>();
             for (int i = 0; i < inventoryCapacity; i++)
             {
-                _inventorySlots.Add(new InventorySlotVM());
+                _inventorySlots.Add(new InventorySlotVM(InventorySlotType.StorageSlot));
             }
+        }
+
+        public override void RefreshValues()
+        {
+            base.RefreshValues();
+            _armorVM.RefreshValues();
+            _weaponVM.RefreshValues();
+            foreach (var slot in _inventorySlots) slot.RefreshValues();
         }
 
         public override void OnFinalize()
@@ -108,6 +113,19 @@ namespace Feudalis.ClientOnly.Inventory
                 if (value != _weaponVM)
                 {
                     _weaponVM = value;
+                    OnPropertyChangedWithValue(value);
+                }
+            }
+        }
+
+        public MBBindingList<InventorySlotVM> InventorySlots
+        {
+            get { return _inventorySlots; }
+            set
+            {
+                if (value != _inventorySlots)
+                {
+                    _inventorySlots = value;
                     OnPropertyChangedWithValue(value);
                 }
             }

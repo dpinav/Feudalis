@@ -2,6 +2,8 @@
 using TaleWorlds.Core;
 using TaleWorlds.MountAndBlade;
 using TaleWorlds.ModuleManager;
+using System.IO;
+using System.Xml.Linq;
 
 namespace Feudalis
 {
@@ -18,5 +20,6 @@ namespace Feudalis
             base.InitializeGameStarter(game, starterObject);
             game.GameTextManager.LoadGameTexts();
         }
+
     }
 }

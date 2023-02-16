@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <Version>0.0.1</Version>
+        <Version>1.0.0.0</Version>
         <TargetFramework>net472</TargetFramework>
         <Platforms>x64</Platforms>
         <LangVersion>10.0</LangVersion>
@@ -17,19 +17,7 @@
     	<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     	<RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
     </PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Client|x64'">
-		<OutputPath>$(GameFolder)\Modules\Feudalis\bin\Win64_Shipping_Client\</OutputPath>
-		<DebugType>pdbonly</DebugType>
-		<DebugSymbols>false</DebugSymbols>
-		<BaseAddress>4194304</BaseAddress>
-		<TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-		<GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
-		<WarningLevel>4</WarningLevel>
-		<CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
-		<DocumentationFile />
-	</PropertyGroup>
-
+	
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Server|x64'">
 		<OutputPath>$(ServerFolder)\Modules\Feudalis\bin\Win64_Shipping_Server\</OutputPath>
 		<DebugType>pdbonly</DebugType>
@@ -51,97 +39,27 @@
 
 
 	<ItemGroup>
-		<!-- Both Client and Server -->
-		<Reference Include="TaleWorlds.Core">
-			<HintPath Condition="'$(Configuration)|$(Platform)'=='Client|x64'">$(GameFolder)\bin\Win64_Shipping_Client\TaleWorlds.Core.dll</HintPath>
-			<HintPath Condition="'$(Configuration)|$(Platform)'=='Server|x64'">$(ServerFolder)\bin\Win64_Shipping_Server\TaleWorlds.Core.dll</HintPath>
+		<Reference Include="$(GameFolder)\bin\Win64_Shipping_Client\TaleWorlds.*.dll" Exclude="$(GameFolder)\bin\Win64_Shipping_Client\TaleWorlds.Native.dll" Condition="'$(Configuration)|$(Platform)'=='Client|x64'">
+			<HintPath>%(Identity)</HintPath>
+			<Private>False</Private>
 		</Reference>
-		<Reference Include="TaleWorlds.ModuleManager">
-			<HintPath Condition="'$(Configuration)|$(Platform)'=='Client|x64'">$(GameFolder)\bin\Win64_Shipping_Client\TaleWorlds.ModuleManager.dll</HintPath>
-			<HintPath Condition="'$(Configuration)|$(Platform)'=='Server|x64'">$(ServerFolder)\bin\Win64_Shipping_Server\TaleWorlds.ModuleManager.dll</HintPath>
-		</Reference>
-		<Reference Include="TaleWorlds.DotNet">
-			<HintPath Condition="'$(Configuration)|$(Platform)'=='Client|x64'">$(GameFolder)\bin\Win64_Shipping_Client\TaleWorlds.DotNet.dll</HintPath>
-			<HintPath Condition="'$(Configuration)|$(Platform)'=='Server|x64'">$(ServerFolder)\bin\Win64_Shipping_Server\TaleWorlds.DotNet.dll</HintPath>
-		</Reference>
-		<Reference Include="TaleWorlds.Engine">
-			<HintPath Condition="'$(Configuration)|$(Platform)'=='Client|x64'">$(GameFolder)\bin\Win64_Shipping_Client\TaleWorlds.Engine.dll</HintPath>
-			<HintPath Condition="'$(Configuration)|$(Platform)'=='Server|x64'">$(ServerFolder)\bin\Win64_Shipping_Server\TaleWorlds.Engine.dll</HintPath>
-		</Reference>
-		<Reference Include="TaleWorlds.ObjectSystem">
-			<HintPath Condition="'$(Configuration)|$(Platform)'=='Client|x64'">$(GameFolder)\bin\Win64_Shipping_Client\TaleWorlds.ObjectSystem.dll</HintPath>
-			<HintPath Condition="'$(Configuration)|$(Platform)'=='Server|x64'">$(ServerFolder)\bin\Win64_Shipping_Server\TaleWorlds.ObjectSystem.dll</HintPath>
-		</Reference>
-		<Reference Include="TaleWorlds.Library">
-			<HintPath Condition="'$(Configuration)|$(Platform)'=='Client|x64'">$(GameFolder)\bin\Win64_Shipping_Client\TaleWorlds.Library.dll</HintPath>
-			<HintPath Condition="'$(Configuration)|$(Platform)'=='Server|x64'">$(ServerFolder)\bin\Win64_Shipping_Server\TaleWorlds.Library.dll</HintPath>
-		</Reference>
-		<Reference Include="TaleWorlds.Localization">
-			<HintPath Condition="'$(Configuration)|$(Platform)'=='Client|x64'">$(GameFolder)\bin\Win64_Shipping_Client\TaleWorlds.Localization.dll</HintPath>
-			<HintPath Condition="'$(Configuration)|$(Platform)'=='Server|x64'">$(ServerFolder)\bin\Win64_Shipping_Server\TaleWorlds.Localization.dll</HintPath>
-		</Reference>
-		<Reference Include="TaleWorlds.MountAndBlade">
-			<HintPath Condition="'$(Configuration)|$(Platform)'=='Client|x64'">$(GameFolder)\bin\Win64_Shipping_Client\TaleWorlds.MountAndBlade.dll</HintPath>
-			<HintPath Condition="'$(Configuration)|$(Platform)'=='Server|x64'">$(ServerFolder)\bin\Win64_Shipping_Server\TaleWorlds.MountAndBlade.dll</HintPath>
+		<Reference Include="$(GameFolder)\Modules\Native\bin\Win64_Shipping_Client\*.dll" Condition="'$(Configuration)|$(Platform)'=='Client|x64'">
+			<HintPath>%(Identity)</HintPath>
+			<Private>False</Private>
 		</Reference>
 
-		<!-- Client Only -->
-		<Reference Include="TaleWorlds.PlayerServices" Condition="'$(Configuration)|$(Platform)'=='Client|x64'">
-			<HintPath>C:\Program Files (x86)\Steam\steamapps\common\Mount &amp; Blade II Bannerlord\bin\Win64_Shipping_Client\TaleWorlds.PlayerServices.dll</HintPath>
+		<Reference Include="$(ServerFolder)\bin\Win64_Shipping_Server\TaleWorlds.*.dll" Condition="'$(Configuration)|$(Platform)'=='Server|x64'">
+			<HintPath>%(Identity)</HintPath>
+			<Private>False</Private>
 		</Reference>
-		<Reference Include="TaleWorlds.InputSystem" Condition="'$(Configuration)|$(Platform)'=='Client|x64'">
-			<HintPath>C:\Program Files (x86)\Steam\steamapps\common\Mount &amp; Blade II Bannerlord\bin\Win64_Shipping_Client\TaleWorlds.InputSystem.dll</HintPath>
-		</Reference>
-		<Reference Include="TaleWorlds.Engine.GauntletUI" Condition="'$(Configuration)|$(Platform)'=='Client|x64'">
-			<HintPath>$(GameFolder)\bin\Win64_Shipping_Client\TaleWorlds.Engine.GauntletUI.dll</HintPath>
-		</Reference>
-		<Reference Include="TaleWorlds.GauntletUI" Condition="'$(Configuration)|$(Platform)'=='Client|x64'">
-			<HintPath>$(GameFolder)\bin\Win64_Shipping_Client\TaleWorlds.GauntletUI.dll</HintPath>
-		</Reference>
-		<Reference Include="TaleWorlds.GauntletUI.Data" Condition="'$(Configuration)|$(Platform)'=='Client|x64'">
-			<HintPath>$(GameFolder)\bin\Win64_Shipping_Client\TaleWorlds.GauntletUI.Data.dll</HintPath>
-		</Reference>
-		<Reference Include="TaleWorlds.TwoDimension" Condition="'$(Configuration)|$(Platform)'=='Client|x64'">
-			<HintPath>$(GameFolder)\bin\Win64_Shipping_Client\TaleWorlds.TwoDimension.dll</HintPath>
-		</Reference>
-		<Reference Include="TaleWorlds.ScreenSystem" Condition="'$(Configuration)|$(Platform)'=='Client|x64'">
-			<HintPath>$(GameFolder)\bin\Win64_Shipping_Client\TaleWorlds.ScreenSystem.dll</HintPath>
-		</Reference>
-		<Reference Include="TaleWorlds.MountAndBlade.ViewModelCollection" Condition="'$(Configuration)|$(Platform)'=='Client|x64'">
-			<HintPath>$(GameFolder)\bin\Win64_Shipping_Client\TaleWorlds.MountAndBlade.ViewModelCollection.dll</HintPath>
-		</Reference>
-		<Reference Include="TaleWorlds.Core.ViewModelCollection" Condition="'$(Configuration)|$(Platform)'=='Client|x64'">
-			<HintPath>C:\Program Files (x86)\Steam\steamapps\common\Mount &amp; Blade II Bannerlord\bin\Win64_Shipping_Client\TaleWorlds.Core.ViewModelCollection.dll</HintPath>
-		</Reference>
-		<Reference Include="TaleWorlds.MountAndBlade.GauntletUI" Condition="'$(Configuration)|$(Platform)'=='Client|x64'">
-			<HintPath>$(GameFolder)\Modules\Native\bin\Win64_Shipping_Client\TaleWorlds.MountAndBlade.GauntletUI.dll</HintPath>
-		</Reference>
-		<Reference Include="TaleWorlds.MountAndBlade.View" Condition="'$(Configuration)|$(Platform)'=='Client|x64'">
-			<HintPath>$(GameFolder)\Modules\Native\bin\Win64_Shipping_Client\TaleWorlds.MountAndBlade.View.dll</HintPath>
-		</Reference>
-	</ItemGroup>
-
-
-	<ItemGroup>
-	  <Compile Include="Properties\Settings.Designer.cs">
-	    <DesignTimeSharedInput>True</DesignTimeSharedInput>
-	    <AutoGen>True</AutoGen>
-	    <DependentUpon>Settings.settings</DependentUpon>
-	  </Compile>
 	</ItemGroup>
 
     <ItemGroup>
       <PackageReference Include="Nullable" Version="1.3.0" PrivateAssets="all" IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive" />
       <PackageReference Include="IsExternalInit" Version="1.0.2" PrivateAssets="all" IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive" />
-      <PackageReference Include="Bannerlord.BuildResources" Version="1.0.1.68 " PrivateAssets="all" IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive" />
+      <PackageReference Include="Bannerlord.BuildResources" Version="1.0.1.80" PrivateAssets="all" IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive" />
       <PackageReference Include="Newtonsoft.Json" Version="11.0.2" PrivateAssets="all" IncludeAssets="compile" />
     </ItemGroup>
 
-    <ItemGroup>
-      <None Include="Properties\Settings.settings">
-        <Generator>SettingsSingleFileGenerator</Generator>
-        <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-      </None>
-    </ItemGroup>
 
 </Project>

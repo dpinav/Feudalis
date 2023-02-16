@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+ <strings>
+   <string id="str_multiplayer_official_game_type_name.Feudalis" text="{=*}Feudalis" />
+   <string id="str_multiplayer_official_game_type_explainer.Feudalis" text="{=*}·   Feudalis is a Roleplay module{newline}·   Very early in development" />
+   <string id="str_multiplayer_game_type.Feudalis" text="{=*}Feudalis" />
+ </strings>

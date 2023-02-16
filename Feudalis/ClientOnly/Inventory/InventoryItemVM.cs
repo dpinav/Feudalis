@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
+using TaleWorlds.MountAndBlade;
 using static TaleWorlds.Core.ItemObject;
 
 namespace Feudalis.ClientOnly.Inventory
@@ -13,7 +14,36 @@ namespace Feudalis.ClientOnly.Inventory
     {
 
         private ItemObject _itemObject;
-        private EquipmentElement _equipmentElement;
+        private EquipmentElement? _equipmentElement;
+        private MissionWeapon? _missionWeapon;
+        private Boolean _isEquipped;
+
+        public InventoryItemVM()
+        {
+
+        }
+
+        public InventoryItemVM(MissionWeapon weapon, bool isEquipped)
+        {
+            _missionWeapon = weapon;
+            _itemObject = weapon.Item;
+        }
+
+        public InventoryItemVM(EquipmentElement equipment, bool isEquipped)
+        {
+            _equipmentElement = equipment;
+            _itemObject = equipment.Item;
+        }
+
+        public Boolean IsWeapon()
+        {
+            return _missionWeapon != null;
+        }
+
+        public Boolean IsArmor()
+        {
+            return _equipmentElement != null;
+        }
 
         #region Properties
 
@@ -29,7 +59,7 @@ namespace Feudalis.ClientOnly.Inventory
             }
         }
 
-        public EquipmentElement Equipment
+        public EquipmentElement? Equipment
         {
             get
             {
@@ -37,8 +67,6 @@ namespace Feudalis.ClientOnly.Inventory
             }
             set
             {
-                if (value.IsEqualTo(this._equipmentElement))
-                    return;
                 this._equipmentElement = value;
                 this.OnPropertyChangedWithValue((object)value, nameof(Equipment));
             }

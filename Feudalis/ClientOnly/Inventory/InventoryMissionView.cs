@@ -27,17 +27,13 @@ namespace Feudalis.ClientOnly.Inventory
             ViewOrderPriority = 15;
 
             _gauntletLayer = new GauntletLayer(ViewOrderPriority);
+            this._client = Mission.GetMissionBehavior<MissionMultiplayerFeudalisClient>();
 
-            var spriteData = UIResourceManager.SpriteData;
-            var resourceContext = UIResourceManager.ResourceContext;
-            var resourceDepot = UIResourceManager.UIResourceDepot;
-            _inventoryCategory = spriteData.SpriteCategories["ui_mpmission"];
-            _inventoryCategory.Load(resourceContext, resourceDepot);
+            LoadSpritesIfNecessary();
 
             _lobbyComponent = Mission.GetMissionBehavior<MissionLobbyComponent>();
             _lobbyComponent.OnPostMatchEnded += OnPostMatchEnded;
 
-            _dataSource.IsEnabled = true;
         }
 
         public override void OnMissionScreenFinalize()
@@ -56,17 +52,21 @@ namespace Feudalis.ClientOnly.Inventory
         public override void OnMissionScreenTick(float dt)
         {
             base.OnMissionScreenTick(dt);
-            _dataSource.Tick(dt);
+            _dataSource?.Tick(dt);
 
             if (this.IsActive)
             {
-                
-                if (HasPressedU() || HasPressedEsc())
+                bool hasPressedESC = _gauntletLayer.Input.IsKeyReleased(TaleWorlds.InputSystem.InputKey.Escape);
+                bool hasPressedU = _gauntletLayer.Input.IsKeyReleased(TaleWorlds.InputSystem.InputKey.U);
+
+                if (hasPressedU || hasPressedESC)
                     this.CloseInventory();
             }
             else
             {
-                if (HasPressedU())
+                bool hasPressedU = Input.IsKeyReleased(TaleWorlds.InputSystem.InputKey.U);
+
+                if (hasPressedU)
                     this.OpenInventory();
             }
         }
@@ -78,15 +78,14 @@ namespace Feudalis.ClientOnly.Inventory
 
         private void OpenInventory()
         {
-            if (this.IsActive)
+            if (this.IsActive || this._client?.MyRepresentative?.ControlledAgent == null)
             {
                 return;
             }
             this.IsActive = true;
             if (_dataSource == null)
             {
-                this._client = Mission.GetMissionBehavior<MissionMultiplayerFeudalisClient>();
-                this._dataSource = new InventoryVM(this._client, 30);
+                this._dataSource = new InventoryVM(this._client, 28);
             }
             this._dataSource.RefreshValues();
             if (this._gauntletLayer != null)
@@ -111,16 +110,17 @@ namespace Feudalis.ClientOnly.Inventory
             }
         }
 
-        private Boolean HasPressedU()
+        private void LoadSpritesIfNecessary()
         {
-            return Input.IsKeyReleased(TaleWorlds.InputSystem.InputKey.U);
-        }
-
-        private Boolean HasPressedEsc()
-        {
-            return 
-                this._gauntletLayer != null 
-                && _gauntletLayer.Input.IsKeyReleased(TaleWorlds.InputSystem.InputKey.Escape);
+            if (_inventoryCategory == null || !_inventoryCategory.IsLoaded)
+            {
+                SpriteData spriteData = UIResourceManager.SpriteData;
+                TwoDimensionEngineResourceContext resourceContext = UIResourceManager.ResourceContext;
+                ResourceDepot uiResourceDepot = UIResourceManager.UIResourceDepot;
+                _inventoryCategory = spriteData.SpriteCategories["ui_inventory"];
+                _inventoryCategory.Load((ITwoDimensionResourceContext)resourceContext, uiResourceDepot);
+                spriteData.SpriteCategories["ui_mpmission"].Load((ITwoDimensionResourceContext)resourceContext, uiResourceDepot);
+            }
         }
 
     }

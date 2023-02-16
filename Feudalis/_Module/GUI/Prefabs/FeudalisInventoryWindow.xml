@@ -40,7 +40,7 @@
         <!-- Central Menu - Inventory -->
         <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="!Inventory.Width" SuggestedHeight="!Inventory.Height" HorizontalAlignment="Center" VerticalAlignment="Center" Sprite="BlankWhiteSquare_9" Color="#000000FF" AlphaFactor="0.8" VisualDefinition="TopMenu" PositionYOffset="-50">
           <Children>
-            <GridWidget Id="InnerPanel" DataSource="{ListInventoryItems}" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" DefaultCellWidth="180" DefaultCellHeight="95" ColumnCount="4" RowCount="5" MarginTop="45" MarginBottom="10">
+            <GridWidget Id="InnerPanel" DataSource="{InventorySlots}" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" DefaultCellWidth="180" DefaultCellHeight="95" ColumnCount="4" RowCount="5" MarginTop="45" MarginBottom="10">
               <ItemTemplate>
                 <FeudalisInventoryItemSlot Parameter.IsRightSide="false" Parameter.IsCentralPanel="true" />
               </ItemTemplate>
