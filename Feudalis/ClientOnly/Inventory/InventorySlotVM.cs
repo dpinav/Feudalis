@@ -1,29 +1,31 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Feudalis.Inventory;
+using System;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
-using TaleWorlds.MountAndBlade;
 
 namespace Feudalis.ClientOnly.Inventory
 {
     public class InventorySlotVM : ViewModel
     {
         private InventoryItemVM _inventoryItem;
-        private EquipmentIndex _index;
         private ImageIdentifierVM _imageIdentifier;
+        private InventoryMissionRepresentative _inventoryRepresentative;
 
-        
-        public InventorySlotVM(EquipmentIndex index)
+        public int Index;
+        public EquipmentIndex EquipmentIndex;
+
+
+        public InventorySlotVM(int index, EquipmentIndex equipmentIndex)
         {
+            _inventoryRepresentative = InventoryMissionRepresentative.GetInventoryRepresentative();
             _inventoryItem = new InventoryItemVM();
-            _index = index;
             _imageIdentifier = new ImageIdentifierVM();
+
+            EquipmentIndex = equipmentIndex;
+            Index = index;
         }
 
-        public InventorySlotVM(InventoryItemVM inventoryItem, EquipmentIndex index) : this(index)
+        public InventorySlotVM(int index, InventoryItemVM inventoryItem, EquipmentIndex equipmentIndex) : this(index, equipmentIndex)
         {
             _inventoryItem = inventoryItem;
             _imageIdentifier = _inventoryItem?.ItemObject != null ? new ImageIdentifierVM(_inventoryItem.ItemObject) : new ImageIdentifierVM();
@@ -35,24 +37,45 @@ namespace Feudalis.ClientOnly.Inventory
             //ImageIdentifier = _inventoryItem?.ItemObject != null ? new ImageIdentifierVM(_inventoryItem.ItemObject) : new ImageIdentifierVM();
         }
 
-        public void ExecuteTransferItem(InventorySlotVM draggedSlot, int index)
+        public void ExecuteTransferToSlot(InventorySlotVM draggedSlot, int index)
         {
             InventorySlotVM targetSlot = this;
-
+            /*
             if (draggedSlot.IsEmpty() || !targetSlot.IsEmpty())
             {
+                FeudalisChatLib.ChatMessage("Return ", Colors.Magenta);
                 return;
-            }
+            }*/
 
-            if (targetSlot._index == EquipmentIndex.None)
+            if (targetSlot.EquipmentIndex == EquipmentIndex.None)
             {
-
+                _inventoryRepresentative.MoveItemToStorage(
+                    targetSlot.Index, targetSlot.GetPanelIndex(), draggedSlot.Index, draggedSlot.GetPanelIndex()
+                    );
             }
         }
 
         public Boolean IsEmpty()
         {
             return _inventoryItem == null;
+        }
+
+        public int GetPanelIndex()
+        {
+            if (this.EquipmentIndex == EquipmentIndex.None)
+            {
+                return (int)PanelIndex.StoragePanel;
+            }
+            if (this.EquipmentIndex > EquipmentIndex.ExtraWeaponSlot)
+            {
+                return (int)PanelIndex.ArmorPanel;
+            }
+            if (this.EquipmentIndex < EquipmentIndex.ExtraWeaponSlot)
+            {
+                return (int)PanelIndex.WeaponPanel;
+            }
+
+            return 0;
         }
 
 
@@ -88,10 +111,10 @@ namespace Feudalis.ClientOnly.Inventory
 
     }
 
-    public enum InventorySlotType
+    public enum PanelIndex
     {
-        StorageSlot = 0,
-        ArmorSlot = 1,
-        WeaponSlot = 2,
+        StoragePanel = 0,
+        ArmorPanel = 1,
+        WeaponPanel = 2,
     }
 }

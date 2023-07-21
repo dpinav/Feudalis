@@ -1,24 +1,28 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
-<Module xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
-        xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/BUTR/Bannerlord.XmlSchemas/master/SubModule.xsd" >
-  <Id value="$modulename$" />
-  <Name value="$modulename$" />
-  <Version value="v$version$" />
-  <ModuleCategory value="Multiplayer"/>
-  <DependedModules>
-    <DependedModule Id="Native" DependentVersion="v1.0.0" Optional="false" />
-  </DependedModules>
-  <SubModules>
-    <SubModule>
-      <Name value="$modulename$" />
-      <DLLName value="$modulename$.dll" />
-      <SubModuleClassType value="$modulename$.FeudalisSubModule" />
-      <Tags />
-    </SubModule>
-  </SubModules>
+<Module>
+    <Id value="$modulename$" />
+    <Name value="$modulename$" />
+    <Version value="v$version$" />
+	<ModuleCategory value="Multiplayer"/>
+    <DependedModules>
+        <DependedModule Id="Native" DependentVersion="v1.1.0" Optional="false" />
+    </DependedModules>
+    <SubModules>
+        <SubModule>
+            <Name value="$modulename$" />
+            <DLLName value="$modulename$.dll" />
+            <SubModuleClassType value="$modulename$.FeudalisSubModule" />
+			<Tags>
+				<Tag key="DedicatedServerType" value="none" />
+			</Tags>
+        </SubModule>
+    </SubModules>
 	<Xmls>
 		<XmlNode>
 			<XmlName id="GameText" path="multiplayer_strings"/>
+			<IncludedGameTypes>
+				<GameType value="MultiplayerGame" />
+			</IncludedGameTypes>
 		</XmlNode>
 	</Xmls>
 </Module>

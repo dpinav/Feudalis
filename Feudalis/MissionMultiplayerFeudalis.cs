@@ -1,4 +1,4 @@
-using System;
+using Feudalis.Inventory;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
@@ -45,6 +45,7 @@ namespace Feudalis
         protected override void HandleEarlyNewClientAfterLoadingFinished(NetworkCommunicator networkPeer)
         {
             networkPeer.AddComponent<FeudalisMissionRepresentative>();
+            networkPeer.AddComponent<InventoryMissionRepresentative>();
         }
 
         protected override void HandleNewClientAfterSynchronized(NetworkCommunicator networkPeer)
@@ -65,7 +66,7 @@ namespace Feudalis
                         GameNetwork.EndModuleEventAsServer();
                     }
                 }
-            }    
+            }
         }
 
         public override void OnPeerChangedTeam(NetworkCommunicator peer, Team oldTeam, Team newTeam)
@@ -128,7 +129,7 @@ namespace Feudalis
             {
                 defenderBounty += player.GetNetworkPeer().GetComponent<FeudalisMissionRepresentative>().Bounty;
             }
-            
+
             if (attackerBounty > defenderBounty)
             {
                 return Mission.Teams.Attacker;

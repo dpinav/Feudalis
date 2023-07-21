@@ -1,9 +1,6 @@
 ﻿using System;
 using TaleWorlds.Core;
 using TaleWorlds.MountAndBlade;
-using TaleWorlds.ModuleManager;
-using System.IO;
-using System.Xml.Linq;
 
 namespace Feudalis
 {

@@ -1,7 +1,7 @@
-﻿using System;
+﻿using Feudalis.Inventory;
+using System;
 using TaleWorlds.Core;
 using TaleWorlds.MountAndBlade;
-using NetworkMessages.FromServer;
 
 namespace Feudalis
 {
@@ -14,13 +14,19 @@ namespace Feudalis
         public override bool IsGameModeUsingAllowTroopChange => false;
         public override MissionLobbyComponent.MultiplayerGameType GameType => MissionLobbyComponent.MultiplayerGameType.TeamDeathmatch;
 
-        public FeudalisMissionRepresentative MyRepresentative { get; private set; }
+        public FeudalisMissionRepresentative FeudalisRepresentative { get; private set; }
         public Action OnMyRepresentativeAssigned;
+
+        public InventoryMissionRepresentative InventoryRepresentative { get; private set; }
 
         private void OnMyClientSynchronized()
         {
-            MyRepresentative = GameNetwork.MyPeer.GetComponent<FeudalisMissionRepresentative>();
-            MyRepresentative?.AddRemoveMessageHandlers(GameNetwork.NetworkMessageHandlerRegisterer.RegisterMode.Add);
+            FeudalisRepresentative = GameNetwork.MyPeer.GetComponent<FeudalisMissionRepresentative>();
+            FeudalisRepresentative?.AddRemoveMessageHandlers(GameNetwork.NetworkMessageHandlerRegisterer.RegisterMode.Add);
+
+            InventoryRepresentative = GameNetwork.MyPeer.GetComponent<InventoryMissionRepresentative>();
+            InventoryRepresentative?.AddRemoveMessageHandlers(GameNetwork.NetworkMessageHandlerRegisterer.RegisterMode.Add);
+
             OnMyRepresentativeAssigned?.Invoke();
         }
 
@@ -36,7 +42,8 @@ namespace Feudalis
             base.OnRemoveBehavior();
 
             MissionNetworkComponent.OnMyClientSynchronized -= OnMyClientSynchronized;
-            MyRepresentative?.AddRemoveMessageHandlers(GameNetwork.NetworkMessageHandlerRegisterer.RegisterMode.Remove);
+            FeudalisRepresentative?.AddRemoveMessageHandlers(GameNetwork.NetworkMessageHandlerRegisterer.RegisterMode.Remove);
+            InventoryRepresentative?.AddRemoveMessageHandlers(GameNetwork.NetworkMessageHandlerRegisterer.RegisterMode.Remove);
         }
 
         public override void AfterStart()
@@ -68,7 +75,7 @@ namespace Feudalis
 
         public override int GetGoldAmount()
         {
-            return MyRepresentative?.Gold ?? 0;
+            return FeudalisRepresentative?.Gold ?? 0;
         }
     }
 }

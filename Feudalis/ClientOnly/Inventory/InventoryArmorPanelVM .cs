@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Feudalis.Inventory;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
@@ -12,7 +8,13 @@ namespace Feudalis.ClientOnly.Inventory
     public class InventoryArmorPanelVM : ViewModel
     {
 
-        private FeudalisMissionRepresentative _representative;
+        public NetworkCommunicator PlayerNetwork { get; private set; }
+        public MissionPeer Player { get; private set; }
+        public bool HasPeerAndMissionComponents { get; private set; } = false;
+
+        private InventoryMissionView _missionView;
+        private InventoryMissionRepresentative _inventoryRepresentative;
+
         private InventorySlotVM _headSlot;
         private InventorySlotVM _shoulderSlot;
         private InventorySlotVM _handSlot;
@@ -20,25 +22,47 @@ namespace Feudalis.ClientOnly.Inventory
         private InventorySlotVM _legSlot;
 
         // Might be better to pass responsability of creating the InventoryItems to the panels...
-        public InventoryArmorPanelVM(FeudalisMissionRepresentative representative)
+        public InventoryArmorPanelVM(InventoryMissionView missionView)
         {
-            _representative = representative;
-            _headSlot = new InventorySlotVM(InventorySlotType.ArmorSlot);
-            _shoulderSlot = new InventorySlotVM(InventorySlotType.ArmorSlot);
-            _handSlot = new InventorySlotVM(InventorySlotType.ArmorSlot);
-            _bodySlot = new InventorySlotVM(InventorySlotType.ArmorSlot);
-            _legSlot = new InventorySlotVM(InventorySlotType.ArmorSlot);
+            _missionView = missionView;
+
+            _headSlot = new InventorySlotVM(5, EquipmentIndex.Head);
+            _shoulderSlot = new InventorySlotVM(9, EquipmentIndex.Cape);
+            _handSlot = new InventorySlotVM(8, EquipmentIndex.Gloves);
+            _bodySlot = new InventorySlotVM(6, EquipmentIndex.Body);
+            _legSlot = new InventorySlotVM(7, EquipmentIndex.Leg);
         }
 
         public override void RefreshValues()
         {
             base.RefreshValues();
-            Agent agent = _representative.ControlledAgent;
+            if (!HasPeerAndMissionComponents)
+            {
+                TryGetPeerAndMissionComponents();
+            }
+            Agent agent = this.Player.ControlledAgent;
+            if (agent == null)
+            {
+                return;
+            }
             _headSlot.InventoryItem = new InventoryItemVM(agent.SpawnEquipment[(int)EquipmentIndex.Head], true);
             _shoulderSlot.InventoryItem = new InventoryItemVM(agent.SpawnEquipment[(int)EquipmentIndex.Cape], true);
             _handSlot.InventoryItem = new InventoryItemVM(agent.SpawnEquipment[(int)EquipmentIndex.Gloves], true);
             _bodySlot.InventoryItem = new InventoryItemVM(agent.SpawnEquipment[(int)EquipmentIndex.Body], true);
             _legSlot.InventoryItem = new InventoryItemVM(agent.SpawnEquipment[(int)EquipmentIndex.Leg], true);
+        }
+
+        private void TryGetPeerAndMissionComponents()
+        {
+            this.PlayerNetwork = GameNetwork.MyPeer;
+            this.Player = this.PlayerNetwork.GetComponent<MissionPeer>();
+            if (this.Player == null)
+                return;
+
+            _inventoryRepresentative = InventoryMissionRepresentative.GetInventoryRepresentative(this.PlayerNetwork);
+            if (_inventoryRepresentative == null)
+                return;
+            this.HasPeerAndMissionComponents = true;
         }
 
         #region Properties

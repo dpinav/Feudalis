@@ -11,11 +11,12 @@ namespace Feudalis
 
         public void AddRemoveMessageHandlers(GameNetwork.NetworkMessageHandlerRegisterer.RegisterMode mode)
         {
-            if (GameNetwork.IsClient)
+            if (!GameNetwork.IsClient)
             {
-                GameNetwork.NetworkMessageHandlerRegisterer reg = new GameNetwork.NetworkMessageHandlerRegisterer(mode);
-                reg.Register<FeudalisPointsUpdateMessage>(HandleServerEventBountyPointsUpdate);
+                return;
             }
+            GameNetwork.NetworkMessageHandlerRegisterer reg = new GameNetwork.NetworkMessageHandlerRegisterer(mode);
+            reg.Register<FeudalisPointsUpdateMessage>(HandleServerEventBountyPointsUpdate);
         }
 
         private void HandleServerEventBountyPointsUpdate(FeudalisPointsUpdateMessage message)

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using TaleWorlds.Core;
+﻿using TaleWorlds.Core;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
 
@@ -8,7 +6,7 @@ namespace Feudalis.ClientOnly.Inventory
 {
     public class InventoryVM : ViewModel
     {
-        private MissionMultiplayerFeudalisClient _client;
+        private InventoryMissionView _view;
         private readonly MissionMultiplayerGameModeBaseClient _gameMode;
         private bool _isMyRepresentativeAssigned;
         private bool _isEnabled;
@@ -20,18 +18,17 @@ namespace Feudalis.ClientOnly.Inventory
         private const float UpdatePlayersDuration = 5.0f;
         private float _updatePlayersTimeElapsed = 0.0f;
 
-        public InventoryVM(MissionMultiplayerFeudalisClient client, int inventoryCapacity)
+        public InventoryVM(InventoryMissionView view, int inventoryCapacity)
         {
-            _client = client;
-            _client.OnMyRepresentativeAssigned += OnMyRepresentativeAssigned;
+            _view = view;
             _gameMode = Mission.Current.GetMissionBehavior<MissionMultiplayerGameModeBaseClient>();
 
-            _armorVM = new InventoryArmorPanelVM(_client.MyRepresentative);
-            _weaponVM = new InventoryWeaponPanelVM(_client.MyRepresentative);
+            _armorVM = new InventoryArmorPanelVM(_view);
+            _weaponVM = new InventoryWeaponPanelVM(_view);
             _inventorySlots = new MBBindingList<InventorySlotVM>();
             for (int i = 0; i < inventoryCapacity; i++)
             {
-                _inventorySlots.Add(new InventorySlotVM(InventorySlotType.StorageSlot));
+                _inventorySlots.Add(new InventorySlotVM(i, EquipmentIndex.None));
             }
         }
 
@@ -46,13 +43,6 @@ namespace Feudalis.ClientOnly.Inventory
         public override void OnFinalize()
         {
             base.OnFinalize();
-
-            _client.OnMyRepresentativeAssigned -= OnMyRepresentativeAssigned;
-
-            if (_isMyRepresentativeAssigned)
-            {
-                _client.MyRepresentative.OnPeerBountyUpdated -= OnPeerBountyUpdated;
-            }
         }
 
         public void Tick(float dt)
@@ -78,7 +68,7 @@ namespace Feudalis.ClientOnly.Inventory
         }
 
         #region Properties
-        
+
         [DataSourceProperty]
         public bool IsEnabled
         {
@@ -93,7 +83,8 @@ namespace Feudalis.ClientOnly.Inventory
             }
         }
 
-        public InventoryArmorPanelVM ArmorPanelVM {
+        public InventoryArmorPanelVM ArmorPanelVM
+        {
             get { return _armorVM; }
             set
             {
