@@ -1,8 +1,5 @@
-﻿using Feudalis.ClientOnly.Inventory;
-using System;
+﻿using Feudalis.ClientOnly;
 using System.Collections.Generic;
-using System.Text;
-using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
 using TaleWorlds.MountAndBlade.View;
 using TaleWorlds.MountAndBlade.View.MissionViews;
@@ -39,9 +36,8 @@ namespace Feudalis
             missionViews.Add(new MissionBoundaryWallView());
             missionViews.Add(new MissionItemContourControllerView());
             missionViews.Add(new MissionAgentContourControllerView());
-            missionViews.Add(new InventoryMissionView());
+            missionViews.Add(new TestMissionView());
             return missionViews.ToArray();
         }
     }
 }
-  

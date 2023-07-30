@@ -1,5 +1,4 @@
-﻿using System;
-using TaleWorlds.Library;
+﻿using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
 using TaleWorlds.MountAndBlade.ViewModelCollection.Multiplayer;
 
@@ -9,8 +8,8 @@ namespace Feudalis
     {
         public FeudalisPlayerVM(MissionPeer peer, int teamIndex) : base(peer)
         {
-
             TeamIndex = teamIndex;
+
         }
 
         #region Properties

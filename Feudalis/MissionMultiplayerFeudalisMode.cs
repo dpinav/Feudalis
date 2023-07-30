@@ -1,4 +1,3 @@
-using System;
 using TaleWorlds.Core;
 using TaleWorlds.MountAndBlade;
 using TaleWorlds.MountAndBlade.Source.Missions;
@@ -21,12 +20,13 @@ namespace Feudalis
                         return new MissionBehavior[]
                         {
                         MissionLobbyComponent.CreateBehavior(),
+                        new MultiplayerWarmupComponent(),
                         new MissionMultiplayerFeudalis(),
                         new MissionMultiplayerFeudalisClient(),
                         new MultiplayerTimerComponent(),
                         new MultiplayerMissionAgentVisualSpawnComponent(),
                         new ConsoleMatchStartEndHandler(),
-                        new SpawnComponent(new FeudalisSpawnFrameBehavior(), new FeudalisSpawningBehavior()),
+                        new SpawnComponent(new SiegeSpawnFrameBehavior(), new SiegeSpawningBehavior()),
                         new MissionLobbyEquipmentNetworkComponent(),
                         new MultiplayerTeamSelectComponent(),
                         new MissionHardBorderPlacer(),
@@ -41,6 +41,7 @@ namespace Feudalis
                         new AgentHumanAILogic(),
                         new EquipmentControllerLeaveLogic(),
                         new MultiplayerPreloadHelper(),
+
                         };
                     }
                     else

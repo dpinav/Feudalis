@@ -1,11 +1,9 @@
-﻿using Feudalis.Inventory;
-using System;
-using TaleWorlds.Core;
+﻿using System;
 using TaleWorlds.MountAndBlade;
 
 namespace Feudalis
 {
-    public class MissionMultiplayerFeudalisClient : MissionMultiplayerGameModeBaseClient
+    public class MissionMultiplayerFeudalisClient : MissionMultiplayerSiegeClient
     {
         public override bool IsGameModeUsingGold => true;
         public override bool IsGameModeTactical => false;
@@ -17,15 +15,10 @@ namespace Feudalis
         public FeudalisMissionRepresentative FeudalisRepresentative { get; private set; }
         public Action OnMyRepresentativeAssigned;
 
-        public InventoryMissionRepresentative InventoryRepresentative { get; private set; }
-
         private void OnMyClientSynchronized()
         {
             FeudalisRepresentative = GameNetwork.MyPeer.GetComponent<FeudalisMissionRepresentative>();
             FeudalisRepresentative?.AddRemoveMessageHandlers(GameNetwork.NetworkMessageHandlerRegisterer.RegisterMode.Add);
-
-            InventoryRepresentative = GameNetwork.MyPeer.GetComponent<InventoryMissionRepresentative>();
-            InventoryRepresentative?.AddRemoveMessageHandlers(GameNetwork.NetworkMessageHandlerRegisterer.RegisterMode.Add);
 
             OnMyRepresentativeAssigned?.Invoke();
         }
@@ -43,16 +36,12 @@ namespace Feudalis
 
             MissionNetworkComponent.OnMyClientSynchronized -= OnMyClientSynchronized;
             FeudalisRepresentative?.AddRemoveMessageHandlers(GameNetwork.NetworkMessageHandlerRegisterer.RegisterMode.Remove);
-            InventoryRepresentative?.AddRemoveMessageHandlers(GameNetwork.NetworkMessageHandlerRegisterer.RegisterMode.Remove);
-        }
-
-        public override void AfterStart()
-        {
-            Mission.SetMissionMode(MissionMode.Battle, true);
         }
 
         protected override void AddRemoveMessageHandlers(GameNetwork.NetworkMessageHandlerRegistererContainer registerer)
         {
+            base.AddRemoveMessageHandlers(registerer);
+
             if (GameNetwork.IsClient)
             {
                 registerer.Register<NetworkMessages.FromServer.SyncGoldsForSkirmish>(HandleServerEventUpdateGold);
@@ -67,15 +56,17 @@ namespace Feudalis
 
         public override void OnGoldAmountChangedForRepresentative(MissionRepresentativeBase representative, int goldAmount)
         {
+            base.OnGoldAmountChangedForRepresentative(representative, goldAmount);
+
             if (representative != null && MissionLobbyComponent.CurrentMultiplayerState != MissionLobbyComponent.MultiplayerGameState.Ending)
             {
-                representative.UpdateGold(goldAmount);
+                representative.UpdateGold(2000);
             }
         }
 
         public override int GetGoldAmount()
         {
-            return FeudalisRepresentative?.Gold ?? 0;
+            return FeudalisRepresentative?.Gold ?? 2000;
         }
     }
 }

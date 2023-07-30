@@ -10,8 +10,9 @@
     "Server": {
       "commandName": "Executable",
       "executablePath": "B:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Dedicated Server\\bin\\Win64_Shipping_Server\\DedicatedCustomServer.Starter.exe",
-      "commandLineArgs": "/dedicatedcustomserverconfigfile tdm_config.txt _MODULES_*Native*Multiplayer*Feudalis*_MODULES_",
-      "workingDirectory": "B:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Dedicated Server\\bin\\Win64_Shipping_Server"
+      "commandLineArgs": "/dedicatedcustomserverconfigfile feudalis_config_siege.txt _MODULES_*Native*Multiplayer*Feudalis*_MODULES_",
+      "workingDirectory": "B:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Dedicated Server\\bin\\Win64_Shipping_Server",
+      "nativeDebugging": true
     }
   }
 }
