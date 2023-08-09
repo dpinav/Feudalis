@@ -66,7 +66,7 @@ namespace Feudalis
 
         public override int GetGoldAmount()
         {
-            return FeudalisRepresentative?.Gold ?? 2000;
+            return 2000;
         }
     }
 }

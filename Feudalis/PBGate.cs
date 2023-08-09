@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Feudalis.Utils;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using TaleWorlds.Core;
@@ -8,12 +9,11 @@ using TaleWorlds.InputSystem;
 using TaleWorlds.Library;
 using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade;
-using TaleWorlds.MountAndBlade.Source.Objects.Siege;
 using MathF = TaleWorlds.Library.MathF;
 
 namespace Feudalis
 {
-    public class PBGate : UsableMachine, ITargetable
+    public class PBGate : UsableMachine
     {
         public const string OuterGateTag = "outer_gate";
         public const string InnerGateTag = "inner_gate";
@@ -33,7 +33,6 @@ namespace Feudalis
         private int _closingAnimationIndex = -1;
         private bool _leftExtraColliderDisabled;
         private bool _rightExtraColliderDisabled;
-        private bool _civilianMission;
         public bool ActivateExtraColliders = true;
         public string SideTag;
         private SynchedMissionObject _door;
@@ -48,14 +47,8 @@ namespace Feudalis
         private bool _afterMissionStartTriggered;
         private sbyte _rightDoorBoneIndex;
         private sbyte _leftDoorBoneIndex;
-        private AgentPathNavMeshChecker _pathChecker;
-        public bool AutoOpen;
         private SynchedMissionObject _plank;
-        private WorldFrame _middleFrame;
-        private WorldFrame _defenseWaitFrame;
         private Action DestructibleComponentOnMissionReset;
-
-        public TacticalPosition MiddlePosition { get; private set; }
 
         private static int BatteringRamHitSoundIdCache
         {
@@ -66,8 +59,6 @@ namespace Feudalis
                 return PBGate._batteringRamHitSoundId;
             }
         }
-
-        public TacticalPosition WaitPosition { get; private set; }
 
         public override FocusableObjectType FocusableObjectType => FocusableObjectType.Gate;
 
@@ -81,9 +72,7 @@ namespace Feudalis
 
         public Vec3 GetPosition() => this.GameEntity.GlobalPosition;
 
-        public WorldFrame MiddleFrame => this._middleFrame;
-
-        public WorldFrame DefenseWaitFrame => this._defenseWaitFrame;
+        public override UsableMachineAIBase CreateAIBehaviorObject() => (UsableMachineAIBase)new PBGateAI(this);
 
         protected override void OnInit()
         {
@@ -122,31 +111,6 @@ namespace Feudalis
                 this._queueManager.IsDeactivated = false;
             }
 
-            List<GameEntity> source1 = this.GameEntity.CollectChildrenEntitiesWithTag("middle_pos");
-            if (source1.Count > 0)
-            {
-                GameEntity gameEntity = source1.FirstOrDefault<GameEntity>();
-                this.MiddlePosition = gameEntity.GetFirstScriptOfType<TacticalPosition>();
-                MatrixFrame globalFrame = gameEntity.GetGlobalFrame();
-                this._middleFrame = new WorldFrame(globalFrame.rotation, globalFrame.origin.ToWorldPosition());
-                this._middleFrame.Origin.GetGroundVec3();
-            }
-            else
-            {
-                MatrixFrame globalFrame = this.GameEntity.GetGlobalFrame();
-                this._middleFrame = new WorldFrame(globalFrame.rotation, globalFrame.origin.ToWorldPosition());
-            }
-            List<GameEntity> source2 = this.GameEntity.CollectChildrenEntitiesWithTag("wait_pos");
-            if (source2.Count > 0)
-            {
-                GameEntity gameEntity = source2.FirstOrDefault<GameEntity>();
-                this.WaitPosition = gameEntity.GetFirstScriptOfType<TacticalPosition>();
-                MatrixFrame globalFrame = gameEntity.GetGlobalFrame();
-                this._defenseWaitFrame = new WorldFrame(globalFrame.rotation, globalFrame.origin.ToWorldPosition());
-                this._defenseWaitFrame.Origin.GetGroundVec3();
-            }
-            else
-                this._defenseWaitFrame = this._middleFrame;
             this._openingAnimationIndex = MBAnimation.GetAnimationIndexWithName(this.OpeningAnimationName);
             this._closingAnimationIndex = MBAnimation.GetAnimationIndexWithName(this.ClosingAnimationName);
             this.SetScriptComponentToTick(this.GetTickRequirement());
@@ -330,6 +294,7 @@ namespace Feudalis
                             this._extraColliderRight.SetBodyFlags(this._extraColliderRight.BodyFlag & ~BodyFlags.Disabled);
                             this._rightExtraColliderDisabled = false;
                         }
+
                         frame2.origin += new Vec3(num3 - num3 * num8);
                         this._extraColliderRight.SetFrame(ref frame2);
                     }
@@ -345,7 +310,8 @@ namespace Feudalis
             }
         }
 
-        public override ScriptComponentBehavior.TickRequirement GetTickRequirement() => this.GameEntity.IsVisibleIncludeParents() ? ScriptComponentBehavior.TickRequirement.Tick | base.GetTickRequirement() : base.GetTickRequirement();
+        public override TickRequirement GetTickRequirement() => TickRequirement.Tick | base.GetTickRequirement();
+        // public override TickRequirement GetTickRequirement() => this.GameEntity.IsVisibleIncludeParents() ? TickRequirement.Tick | base.GetTickRequirement() : base.GetTickRequirement();
 
         protected override void OnTick(float dt)
         {
@@ -354,32 +320,8 @@ namespace Feudalis
                 return;
             if (this._afterMissionStartTriggered)
                 this.UpdateDoorBodies(false);
-            if (!GameNetwork.IsClientOrReplay)
+            if (GameNetwork.IsServer)
                 this.ServerTick(dt);
-            if (!this.Ai.HasActionCompleted)
-                return;
-            bool flag1 = false;
-            for (int index = 0; index < this.StandingPoints.Count; ++index)
-            {
-                if (this.StandingPoints[index].HasUser || this.StandingPoints[index].HasAIMovingTo)
-                {
-                    flag1 = true;
-                    break;
-                }
-            }
-            if (flag1)
-                return;
-            bool flag2 = false;
-            for (int index = 0; index < this._userFormations.Count; ++index)
-            {
-                if (this._userFormations[index].CountOfDetachableNonplayerUnits > 0)
-                {
-                    flag2 = true;
-                    break;
-                }
-            }
-            if (flag2)
-                return;
         }
 
         protected override bool IsAgentOnInconvenientNavmesh(Agent agent, StandingPoint standingPoint) => false;
@@ -403,7 +345,7 @@ namespace Feudalis
                 }
             }
 
-            if (!((NativeObject)this._doorSkeleton != (NativeObject)null) || this.IsDestroyed)
+            if (this._doorSkeleton is null || this.IsDestroyed)
                 return;
             float parameterAtChannel = this._doorSkeleton.GetAnimationParameterAtChannel(0);
             foreach (StandingPoint standingPoint in (List<StandingPoint>)this.StandingPoints)
@@ -428,24 +370,6 @@ namespace Feudalis
                 return;
             this._plank.SetVisibleSynched(true);
         }
-
-        public TargetFlags GetTargetFlags()
-        {
-            TargetFlags targetFlags = (TargetFlags)(0 | 4);
-            if (this.IsDestroyed)
-                targetFlags |= TargetFlags.NotAThreat;
-            if (DebugSiegeBehavior.DebugAttackState == DebugSiegeBehavior.DebugStateAttacker.DebugAttackersToBattlements)
-                targetFlags |= TargetFlags.DebugThreat;
-            return targetFlags;
-        }
-
-        public float GetTargetValue(List<Vec3> weaponPos) => 10f;
-
-        public GameEntity GetTargetEntity() => this.GameEntity;
-
-        public BattleSideEnum GetSide() => BattleSideEnum.Defender;
-
-        public GameEntity Entity() => this.GameEntity;
 
         protected void CollectGameEntities(bool calledFromOnInit)
         {
@@ -599,6 +523,7 @@ namespace Feudalis
           ScriptComponentBehavior attackerScriptComponentBehavior,
           int inflictedDamage)
         {
+            FeudalisChatLib.ChatMessage("Hit!");
             if (GameNetwork.IsClientOrReplay || inflictedDamage < 200 || this.State != PBGate.GateState.Closed || !(attackerScriptComponentBehavior is BatteringRam))
                 return;
             this._plank?.SetAnimationAtChannelSynched(this.PlankHitAnimationName, 0);
@@ -613,6 +538,7 @@ namespace Feudalis
           ScriptComponentBehavior attackerScriptComponentBehavior,
           int inflictedDamage)
         {
+            FeudalisChatLib.ChatMessage("Destroyed!");
             if (GameNetwork.IsClientOrReplay)
                 return;
             this._plank?.SetVisibleSynched(false);
@@ -620,6 +546,7 @@ namespace Feudalis
                 standingPoint.SetIsDeactivatedSynched(true);
             if (attackerScriptComponentBehavior is BatteringRam)
                 this._door.SetAnimationAtChannelSynched(this.DestroyAnimationName, 0);
+            destroyerAgent.Die(new Blow(inflictedDamage));
         }
 
         private int OnCalculateDestructionStateIndex(

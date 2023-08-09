@@ -17,15 +17,38 @@
 	</PropertyGroup>
 	
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Server|x64'">
-		<TargetFramework>netcoreapp3.1</TargetFramework>
-		<!--TargetFramework>net472</TargetFramework-->
+		<!--TargetFramework>netcoreapp3.1</TargetFramework-->
+		<TargetFramework>net472</TargetFramework>
 	</PropertyGroup>
 
     <PropertyGroup>
     	<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     	<RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
     </PropertyGroup>
-	
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Client|x64'">
+		<OutputPath>$(GameFolder)\Modules\Feudalis\bin\Win64_Shipping_Client\</OutputPath>
+		<DebugType>pdbonly</DebugType>
+		<DebugSymbols>false</DebugSymbols>
+		<BaseAddress>4194304</BaseAddress>
+		<TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+		<GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+		<WarningLevel>4</WarningLevel>
+		<CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+		<DocumentationFile />
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Client|x64'">
+		<OutputPath>$(GameFolder)\Modules\Feudalis\bin\Win64_Shipping_wEditor\</OutputPath>
+		<DebugType>pdbonly</DebugType>
+		<DebugSymbols>false</DebugSymbols>
+		<BaseAddress>4194304</BaseAddress>
+		<TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+		<GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+		<WarningLevel>4</WarningLevel>
+		<CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+		<DocumentationFile />
+	</PropertyGroup>
+
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Server|x64'">
 		<OutputPath>$(ServerFolder)\Modules\Feudalis\bin\Win64_Shipping_Server\</OutputPath>
 		<DebugType>pdbonly</DebugType>
@@ -51,12 +74,23 @@
 			<HintPath>%(Identity)</HintPath>
 			<Private>False</Private>
 		</Reference>
+		
+		<Reference Include="$(GameFolder)\bin\Win64_Shipping_Client\System.Numerics.Vectors.dll" Condition="'$(Configuration)|$(Platform)'=='Client|x64'">
+			<HintPath>%(Identity)</HintPath>
+			<Private>False</Private>
+		</Reference>
+		
 		<Reference Include="$(GameFolder)\Modules\Native\bin\Win64_Shipping_Client\*.dll" Condition="'$(Configuration)|$(Platform)'=='Client|x64'">
 			<HintPath>%(Identity)</HintPath>
 			<Private>False</Private>
 		</Reference>
 
 		<Reference Include="$(ServerFolder)\bin\Win64_Shipping_Server\TaleWorlds.*.dll" Condition="'$(Configuration)|$(Platform)'=='Server|x64'">
+			<HintPath>%(Identity)</HintPath>
+			<Private>False</Private>
+		</Reference>
+
+		<Reference Include="$(ServerFolder)\bin\Win64_Shipping_Server\System.Numerics.Vectors.dll" Condition="'$(Configuration)|$(Platform)'=='Server|x64'">
 			<HintPath>%(Identity)</HintPath>
 			<Private>False</Private>
 		</Reference>
