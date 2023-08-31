@@ -50,11 +50,7 @@ namespace Feudalis
 
         public override void OnMissionTick(float dt)
         {
-            if ((double)Mission.Current.CurrentTime - (double)this._lastPerkTickTime < 1.0)
-                return;
-            this._lastPerkTickTime = Mission.Current.CurrentTime;
-            MPPerkObject.TickAllPeerPerks((int)((double)this._lastPerkTickTime / 1.0));
-
+            base.OnMissionTick(dt);
             //GameNetwork.BeginBroadcastModuleEvent();
             //GameNetwork.WriteMessage((GameNetworkMessage)new SiegeMoraleChangeMessage(1000, 1000, this._capturePointRemainingMoraleGains));
             //GameNetwork.EndBroadcastModuleEvent(GameNetwork.EventBroadcastFlags.None);
