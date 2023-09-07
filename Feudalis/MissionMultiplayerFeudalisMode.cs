@@ -26,7 +26,7 @@ namespace Feudalis
                         new MultiplayerTimerComponent(),
                         new MultiplayerMissionAgentVisualSpawnComponent(),
                         new ConsoleMatchStartEndHandler(),
-                        new SpawnComponent(new SiegeSpawnFrameBehavior(), new SiegeSpawningBehavior()),
+                        new SpawnComponent(new FeudalisSpawnFrameBehavior(), new FeudalisSpawningBehavior()),
                         new MissionLobbyEquipmentNetworkComponent(),
                         new MultiplayerTeamSelectComponent(),
                         new MissionHardBorderPlacer(),

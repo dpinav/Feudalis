@@ -2,7 +2,7 @@ using TaleWorlds.MountAndBlade;
 
 namespace Feudalis
 {
-    public class MissionMultiplayerFeudalis : MissionMultiplayerSiege
+    public class MissionMultiplayerFeudalis : MissionMultiplayerTeamDeathmatch
     {
         private const int InitialGold = 1500;
         private float _lastPerkTickTime;
@@ -11,7 +11,7 @@ namespace Feudalis
 
         public override MissionLobbyComponent.MultiplayerGameType GetMissionType()
         {
-            return MissionLobbyComponent.MultiplayerGameType.Siege;
+            return MissionLobbyComponent.MultiplayerGameType.TeamDeathmatch;
         }
 
         public override void OnBehaviorInitialize()
@@ -51,9 +51,6 @@ namespace Feudalis
         public override void OnMissionTick(float dt)
         {
             base.OnMissionTick(dt);
-            //GameNetwork.BeginBroadcastModuleEvent();
-            //GameNetwork.WriteMessage((GameNetworkMessage)new SiegeMoraleChangeMessage(1000, 1000, this._capturePointRemainingMoraleGains));
-            //GameNetwork.EndBroadcastModuleEvent(GameNetwork.EventBroadcastFlags.None);
         }
 
         public override bool CheckForMatchEnd() => false;

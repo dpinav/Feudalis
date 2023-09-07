@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Feudalis.Utils;
+using System;
 using TaleWorlds.MountAndBlade;
+using TaleWorlds.MountAndBlade.Network.Messages;
 
 namespace Feudalis
 {
@@ -17,6 +19,7 @@ namespace Feudalis
             }
             GameNetwork.NetworkMessageHandlerRegisterer reg = new GameNetwork.NetworkMessageHandlerRegisterer(mode);
             reg.Register<FeudalisPointsUpdateMessage>(HandleServerEventBountyPointsUpdate);
+            reg.Register<ServerBroadcastInformationMessage>(new GameNetworkMessage.ServerMessageHandlerDelegate<ServerBroadcastInformationMessage>(this.DisplayBroadcastMessage));
         }
 
         private void HandleServerEventBountyPointsUpdate(FeudalisPointsUpdateMessage message)
@@ -33,6 +36,14 @@ namespace Feudalis
         public void UpdateBounty(int bounty)
         {
             Bounty = bounty;
+        }
+
+        private void DisplayBroadcastMessage(ServerBroadcastInformationMessage message)
+        {
+            if (message.IsBannerMessage)
+                FeudalisChatLib.BannerMessage(message.Message);
+            else
+                FeudalisChatLib.ChatMessage(message.Message, message.Color);
         }
     }
 }

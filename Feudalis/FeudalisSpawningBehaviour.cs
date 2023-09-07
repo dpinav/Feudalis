@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using TaleWorlds.Core;
 using TaleWorlds.MountAndBlade;
 using TaleWorlds.ObjectSystem;
@@ -90,8 +89,8 @@ namespace Feudalis
                         agentBuildData.MissionPeer(missionPeer);
                         agentBuildData.Equipment(equipment);
                         agentBuildData.Team(missionPeer.Team);
-
                         agentBuildData.IsFemale(missionPeer.Peer.IsFemale);
+
                         agentBuildData.BodyProperties(GetBodyProperties(missionPeer,
                             missionPeer.Team == Mission.AttackerTeam ? cultureTeamOne : cultureTeamTwo));
                         agentBuildData.VisualsIndex(0);

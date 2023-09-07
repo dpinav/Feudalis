@@ -3,7 +3,7 @@ using TaleWorlds.MountAndBlade;
 
 namespace Feudalis
 {
-    public class MissionMultiplayerFeudalisClient : MissionMultiplayerSiegeClient
+    public class MissionMultiplayerFeudalisClient : MissionMultiplayerTeamDeathmatchClient
     {
         public override bool IsGameModeUsingGold => true;
         public override bool IsGameModeTactical => false;

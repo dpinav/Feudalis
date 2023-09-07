@@ -4,9 +4,9 @@ using TaleWorlds.Library;
 using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade;
 
-namespace Feudalis
+namespace Feudalis.Components
 {
-    public class PBGate : UsableMissionObject
+    public class PBGate : PBUsableMissionObject
     {
 
         private float _currentRotation = 0f;
@@ -27,9 +27,9 @@ namespace Feudalis
 
         public PBRepairableComponent PBRepairableComponent { get; private set; }
 
-        public bool IsDestroyed => this.PBRepairableComponent is not null && this.PBRepairableComponent.IsDestroyed;
+        public bool IsDestroyed => PBRepairableComponent is not null && PBRepairableComponent.IsDestroyed;
 
-        public bool IsOpen => this.State == PBGate.GateState.Open || this.IsDestroyed;
+        public bool IsOpen => State == GateState.Open || IsDestroyed;
 
         public override FocusableObjectType FocusableObjectType => FocusableObjectType.Item;
 
@@ -48,8 +48,8 @@ namespace Feudalis
             this.IsInstantUse = true;
             this.ActionMessage = new TextObject("Door");
             this.DescriptionMessage = new TextObject("Press F");
-            this.SetOpenAndClosedMatrixFrames();
-            this.SetScriptComponentToTick(this.GetTickRequirement());
+            SetOpenAndClosedMatrixFrames();
+            SetScriptComponentToTick(GetTickRequirement());
         }
 
         protected override void OnEditorInit()
@@ -60,7 +60,7 @@ namespace Feudalis
             this.IsInstantUse = true;
             this.ActionMessage = new TextObject("Door");
             this.DescriptionMessage = new TextObject("Press F");
-            this.SetOpenAndClosedMatrixFrames();
+            SetOpenAndClosedMatrixFrames();
         }
 
         public override void OnUse(Agent userAgent)
@@ -94,17 +94,17 @@ namespace Feudalis
             }
 
             // Slerp Alpha, from 0 to 1
-            this._currentRotation += (this.RotationSpeed) * dt;
+            this._currentRotation += RotationSpeed * dt;
 
             // Door is being opened, goes from closed position to open position
             if (this.IsOpen)
             {
-                SlerpGameEntity(this._closedPosition, this._openPosition, this._currentRotation);
+                SlerpGameEntity(_closedPosition, _openPosition, _currentRotation);
             }
             // Door is being closed, goes from open position to closed position
             else
             {
-                SlerpGameEntity(this._openPosition, this._closedPosition, this._currentRotation);
+                SlerpGameEntity(_openPosition, _closedPosition, _currentRotation);
             }
 
             if (this._currentRotation >= 1)
@@ -118,16 +118,16 @@ namespace Feudalis
         {
             if (this.IsOpen)
             {
-                MatrixFrame entityFrame = this.GameEntity.GetFrame();
+                MatrixFrame entityFrame = GameEntity.GetFrame();
                 this._openPosition = entityFrame;
-                entityFrame.rotation.RotateAboutUp(this.TotalRotation);
+                entityFrame.rotation.RotateAboutUp(TotalRotation);
                 this._closedPosition = entityFrame;
             }
             else
             {
-                MatrixFrame entityFrame = this.GameEntity.GetFrame();
+                MatrixFrame entityFrame = GameEntity.GetFrame();
                 this._closedPosition = entityFrame;
-                entityFrame.rotation.RotateAboutUp(-this.TotalRotation);
+                entityFrame.rotation.RotateAboutUp(-TotalRotation);
                 this._openPosition = entityFrame;
             }
         }
@@ -135,7 +135,7 @@ namespace Feudalis
         private void SlerpGameEntity(MatrixFrame origin, MatrixFrame destination, float rotationPercentage)
         {
             MatrixFrame matrixFrame = MatrixFrame.Slerp(origin, destination, rotationPercentage);
-            this.SetFrameSynched(ref matrixFrame);
+            SetFrameSynched(ref matrixFrame);
         }
 
         private void OpenGate()
@@ -143,8 +143,6 @@ namespace Feudalis
             this.State = GateState.Open;
             this._isRotating = true;
             this._currentRotation = 0;
-
-            // this.SetFrameSynchedOverTime(ref this._openPosition, 150f);
         }
 
         private void CloseGate()
@@ -153,7 +151,6 @@ namespace Feudalis
             this._isRotating = true;
             this._currentRotation = 0;
 
-            // this.SetFrameSynchedOverTime(ref this._closedPosition, 150f);
         }
 
         protected override void OnEditorVariableChanged(string variableName)
@@ -163,18 +160,18 @@ namespace Feudalis
                 case "State":
                     if (this.IsOpen)
                     {
-                        this.GameEntity.SetFrame(ref this._openPosition);
+                        GameEntity.SetFrame(ref _openPosition);
                     }
                     else
                     {
-                        this.GameEntity.SetFrame(ref this._closedPosition);
+                        GameEntity.SetFrame(ref _closedPosition);
                     }
                     break;
                 case "RotationSpeed":
-                    this.RotationSpeed = MathF.Clamp(this.RotationSpeed, 0.1f, 100f);
+                    this.RotationSpeed = MathF.Clamp(RotationSpeed, 0.1f, 100f);
                     break;
                 case "TotalRotation":
-                    this.SetOpenAndClosedMatrixFrames();
+                    SetOpenAndClosedMatrixFrames();
                     break;
             }
         }
