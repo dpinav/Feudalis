@@ -1,16 +1,19 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using TaleWorlds.Core;
 using TaleWorlds.Engine;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
 
+
 namespace Feudalis.Components
 {
 
     /* A wrapper of DestructableComponent class */
-    public class PBRepairableComponent : ScriptComponentBehavior
+    public class PBRepairableComponent : SynchedMissionObject
     {
         private float _hitpoint;
+        private bool _isActuallyDestroyed = false; // Prevents the destroying hit to repair at the same time. Won't be needed when we use resources
         private Dictionary<string, int> _resourcesNeeded = new Dictionary<string, int>();
 
         public string ResourcesTypeNeeded;
@@ -28,15 +31,17 @@ namespace Feudalis.Components
             base.OnInit();
             DestructableComponent = GameEntity.GetFirstScriptOfType<DestructableComponent>();
 
-            if (DestructableComponent is null)
+            if (DestructableComponent == null)
             {
-                Debug.Print($"DestructableComponent not found for PBRepairableComponent with GameEntity Name: {GameEntity.Name}");
+                Console.WriteLine($"DestructableComponent not found for PBRepairableComponent with GameEntity Name: {GameEntity.Name}");
                 return;
             }
 
-            this.DestructableComponent.OnHitTaken += OnHit;
+            // this.DestructableComponent.OnHitTaken += OnHit;
 
             _hitpoint = DestructableComponent.HitPoint;
+            Console.WriteLine($"PBRepairableComponent initialized for: {GameEntity.Name}");
+            Console.WriteLine($"Max hitpoints: {_hitpoint}");
 
             SetScriptComponentToTick(GetTickRequirement());
 
@@ -58,27 +63,51 @@ namespace Feudalis.Components
 
         }
 
-        private void OnHit(DestructableComponent target, Agent attackerAgent, in MissionWeapon weapon, ScriptComponentBehavior attackerScriptComponentBehavior, int inflictedDamage)
+        protected override bool OnHit(Agent attackerAgent, int damage, Vec3 impactPosition, Vec3 impactDirection, in MissionWeapon weapon, ScriptComponentBehavior attackerScriptComponentBehavior, out bool reportDamage)
         {
-            if (!IsDestroyed)
+            reportDamage = false;
+            if (GameNetwork.IsClientOrReplay)
             {
-                _hitpoint = DestructableComponent.HitPoint;
-                return;
+                return false;
             }
 
-            if (!UsesResources())
+            Console.WriteLine($"OnHit PBRepairableComponent: {GameEntity.Name}");
+
+            if (!IsDestroyed)
             {
-                _hitpoint += 2 * inflictedDamage;
+                _hitpoint -= damage;
+                Console.WriteLine($"OnHit damaging, hitpoints: {_hitpoint}");
+                return false;
+            }
+
+            if (!UsesResources() && _isActuallyDestroyed)
+            {
+                _hitpoint += damage;
+                Console.WriteLine($"OnHit repairing, hitpoints: {_hitpoint}");
+            }
+            else
+            {
+                // Shenagigans that will be removed once we use resources for repairing
+                _hitpoint = 0;
+                _isActuallyDestroyed = true;
             }
 
             if (_hitpoint >= DestructableComponent.MaxHitPoint)
             {
+                Console.WriteLine($"OnHit PBRepairableComponent REPAIRED");
                 DestructableComponent.Reset();
                 _hitpoint = DestructableComponent.HitPoint;
+                _isActuallyDestroyed = false;
+
+                // Reset only works for server side, so we use a little network message hack
+                GameNetwork.BeginBroadcastModuleEvent();
+                GameNetwork.WriteMessage(new NetworkMessages.FromServer.SyncObjectDestructionLevel(DestructableComponent, 1, -1, 0f, impactPosition, impactDirection));
+                GameNetwork.EndBroadcastModuleEvent(GameNetwork.EventBroadcastFlags.AddToMissionRecord);
             }
 
+            reportDamage = true;
+            return true;
         }
-
 
         protected override bool OnCheckForProblems()
         {
@@ -95,9 +124,10 @@ namespace Feudalis.Components
 
         private bool UsesResources()
         {
-            return _resourcesNeeded.Count > 0 || ResourcesTypeNeeded is not null && ResourcesAmountNeeded is not null && !ResourcesTypeNeeded.IsEmpty() && !ResourcesAmountNeeded.IsEmpty();
+            return _resourcesNeeded.Count > 0 ||
+                ResourcesTypeNeeded != null && ResourcesAmountNeeded != null &&
+                !ResourcesTypeNeeded.IsEmpty() && !ResourcesAmountNeeded.IsEmpty();
         }
 
     }
 }
-
