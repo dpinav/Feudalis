@@ -36,11 +36,6 @@ namespace Feudalis.Components
             this._moveableEntities = entitiesWithScript.Select(e => e.GetScriptComponents<PBMoveableEntity>().FirstOrDefault()).ToList();
 
             this.SetScriptComponentToTick(GetTickRequirement());
-
-            foreach (PBMoveableEntity entity in this._moveableEntities)
-            {
-                FeudalisChatLib.ChatMessage("Found moveable entity " + entity.TagBaseEntity);
-            }
         }
 
         public override void OnUse(Agent userAgent)
