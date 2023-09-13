@@ -1,12 +1,13 @@
-﻿using Feudalis.Utils;
+﻿using TaleWorlds.Core;
 using TaleWorlds.Engine;
+using TaleWorlds.InputSystem;
 using TaleWorlds.Library;
 using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade;
 
 namespace Feudalis.Components
 {
-    public class PBGate : PBUsableMissionObject
+    public class PBDoor : UsableMissionObject
     {
 
         private float _currentRotation = 0f;
@@ -25,11 +26,11 @@ namespace Feudalis.Components
         // Rotation speed, from 0.1 to 100
         public float RotationSpeed = 3f;
 
-        public PBRepairableComponent PBRepairableComponent { get; private set; }
+        public DestructableComponent DestructableComponent { get; private set; }
 
-        public bool IsDestroyed => PBRepairableComponent is not null && PBRepairableComponent.IsDestroyed;
+        public bool IsDestroyed => DestructableComponent != null && DestructableComponent.IsDestroyed;
 
-        public bool IsOpen => State == GateState.Open || IsDestroyed;
+        public bool IsOpen => State == GateState.Open;
 
         public override FocusableObjectType FocusableObjectType => FocusableObjectType.Item;
 
@@ -43,11 +44,16 @@ namespace Feudalis.Components
         protected override void OnInit()
         {
             base.OnInit();
-            this.LockUserFrames = false;
-            this.LockUserPositions = false;
-            this.IsInstantUse = true;
-            this.ActionMessage = new TextObject("Door");
-            this.DescriptionMessage = new TextObject("Press F");
+            LockUserFrames = false;
+            LockUserPositions = false;
+            IsInstantUse = true;
+            TextObject textObject = new TextObject("Press {KEY} to use", null);
+            textObject.SetTextVariable("KEY", HyperlinkTexts.GetKeyHyperlinkText(HotKeyManager.GetHotKeyId("CombatHotKeyCategory", 13)));
+            ActionMessage = textObject;
+            DescriptionMessage = new TextObject("Door");
+
+            DestructableComponent = GameEntity.GetFirstScriptOfType<DestructableComponent>();
+
             SetOpenAndClosedMatrixFrames();
             SetScriptComponentToTick(GetTickRequirement());
         }
@@ -55,11 +61,11 @@ namespace Feudalis.Components
         protected override void OnEditorInit()
         {
             base.OnEditorInit();
-            this.LockUserFrames = false;
-            this.LockUserPositions = false;
-            this.IsInstantUse = true;
-            this.ActionMessage = new TextObject("Door");
-            this.DescriptionMessage = new TextObject("Press F");
+            LockUserFrames = false;
+            LockUserPositions = false;
+            IsInstantUse = true;
+            ActionMessage = new TextObject("Door");
+            DescriptionMessage = new TextObject("Press F");
             SetOpenAndClosedMatrixFrames();
         }
 
@@ -67,14 +73,12 @@ namespace Feudalis.Components
         {
             base.OnUse(userAgent);
 
-            if (this._isRotating)
+            if (_isRotating || IsDestroyed)
             {
                 return;
             }
 
-            FeudalisChatLib.ChatMessage($"{userAgent?.Name} used the door", Colors.Magenta);
-
-            if (this.IsOpen)
+            if (IsOpen)
             {
                 CloseGate();
             }
@@ -88,16 +92,16 @@ namespace Feudalis.Components
         protected override void OnTick(float dt)
         {
             base.OnTick(dt);
-            if (!this._isRotating || GameNetwork.IsClient)
+            if (!_isRotating || GameNetwork.IsClient)
             {
                 return;
             }
 
             // Slerp Alpha, from 0 to 1
-            this._currentRotation += RotationSpeed * dt;
+            _currentRotation += RotationSpeed * dt;
 
             // Door is being opened, goes from closed position to open position
-            if (this.IsOpen)
+            if (IsOpen)
             {
                 SlerpGameEntity(_closedPosition, _openPosition, _currentRotation);
             }
@@ -107,28 +111,28 @@ namespace Feudalis.Components
                 SlerpGameEntity(_openPosition, _closedPosition, _currentRotation);
             }
 
-            if (this._currentRotation >= 1)
+            if (_currentRotation >= 1)
             {
-                this._isRotating = false;
-                this._currentRotation = 0;
+                _isRotating = false;
+                _currentRotation = 0;
             }
         }
 
         private void SetOpenAndClosedMatrixFrames()
         {
-            if (this.IsOpen)
+            if (IsOpen)
             {
                 MatrixFrame entityFrame = GameEntity.GetFrame();
-                this._openPosition = entityFrame;
+                _openPosition = entityFrame;
                 entityFrame.rotation.RotateAboutUp(TotalRotation);
-                this._closedPosition = entityFrame;
+                _closedPosition = entityFrame;
             }
             else
             {
                 MatrixFrame entityFrame = GameEntity.GetFrame();
-                this._closedPosition = entityFrame;
+                _closedPosition = entityFrame;
                 entityFrame.rotation.RotateAboutUp(-TotalRotation);
-                this._openPosition = entityFrame;
+                _openPosition = entityFrame;
             }
         }
 
@@ -140,16 +144,18 @@ namespace Feudalis.Components
 
         private void OpenGate()
         {
-            this.State = GateState.Open;
-            this._isRotating = true;
-            this._currentRotation = 0;
+            if (IsOpen) return;
+            State = GateState.Open;
+            _isRotating = true;
+            _currentRotation = 0;
         }
 
         private void CloseGate()
         {
-            this.State = GateState.Closed;
-            this._isRotating = true;
-            this._currentRotation = 0;
+            if (!IsOpen) return;
+            State = GateState.Closed;
+            _isRotating = true;
+            _currentRotation = 0;
 
         }
 
@@ -158,7 +164,7 @@ namespace Feudalis.Components
             switch (variableName)
             {
                 case "State":
-                    if (this.IsOpen)
+                    if (IsOpen)
                     {
                         GameEntity.SetFrame(ref _openPosition);
                     }
@@ -168,7 +174,7 @@ namespace Feudalis.Components
                     }
                     break;
                 case "RotationSpeed":
-                    this.RotationSpeed = MathF.Clamp(RotationSpeed, 0.1f, 100f);
+                    RotationSpeed = MathF.Clamp(RotationSpeed, 0.1f, 100f);
                     break;
                 case "TotalRotation":
                     SetOpenAndClosedMatrixFrames();
