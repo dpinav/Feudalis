@@ -87,7 +87,7 @@ namespace Feudalis.Components
         {
             base.OnTick(dt);
 
-            if (!this._isMoving || GameNetwork.IsClientOrReplay)
+            if (!this._isMoving)
             {
                 return;
             }
@@ -108,10 +108,17 @@ namespace Feudalis.Components
 
             MatrixFrame currentFrame = this._currentFrame;
             MatrixFrame destinationFrame = this._pointsToMoveTo[this._currentPointIndex];
-            MatrixFrame nextFrame = MatrixFrame.Slerp(currentFrame, destinationFrame, this._distanceTraveled);
+            MatrixFrame nextFrame = MatrixFrame.Lerp(currentFrame, destinationFrame, this._distanceTraveled);
             nextFrame.Scale(currentFrame.GetScale());
 
-            this._baseSynchedMissionObject.SetFrameSynched(ref nextFrame);
+            if (GameNetwork.IsClient)
+            {
+                this._baseEntity.SetFrame(ref nextFrame);
+            }
+            else
+            {
+                this._baseSynchedMissionObject.SetFrameSynched(ref nextFrame);
+            }
 
             if (this._distanceTraveled >= 1f)
             {
@@ -136,10 +143,6 @@ namespace Feudalis.Components
         public void OnUse()
         {
 
-            if (GameNetwork.IsClientOrReplay)
-            {
-                return;
-            }
             FeudalisChatLib.BroadcastChatMessage("distance " + this._distanceTraveled +
                     "\n currentPoint: " + this._currentPointIndex +
                     "\n isMoving: " + this._isMoving +
